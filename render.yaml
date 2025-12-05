@@ -35,6 +35,8 @@ services:
         value: true
       - key: L5_SWAGGER_GENERATE_ALWAYS
         value: false
+      - key: L5_SWAGGER_CONST_HOST
+        value: https://tinderkw-api.onrender.com
       - key: ASSET_URL
         value: https://tinderkw-api.onrender.com
       - key: DB_CONNECTION

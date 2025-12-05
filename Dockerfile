@@ -37,6 +37,9 @@ COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 # Install PHP dependencies
 RUN composer install --optimize-autoloader --no-dev --no-interaction
 
+# Publish L5-Swagger assets and config
+RUN php artisan vendor:publish --provider="L5Swagger\L5SwaggerServiceProvider" --force
+
 # Create necessary directories and set permissions
 RUN mkdir -p /var/www/html/storage/api-docs \
     && mkdir -p /var/www/html/storage/logs \
@@ -75,18 +78,25 @@ php artisan db:seed --force || echo "Seeding skipped (may already be seeded)"\n\
 \n\
 
 \n\
+# Clear all caches first\n\
+echo "Clearing caches..."\n\
+php artisan config:clear\n\
+php artisan route:clear\n\
+php artisan cache:clear\n\
+php artisan view:clear\n\
+\n\
+# Create storage link for public access\n\
+php artisan storage:link || true\n\
+\n\
 # Generate Swagger documentation\n\
 echo "Generating Swagger documentation..."\n\
 php artisan l5-swagger:generate\n\
 \n\
-
-# Clear and cache config\n\
+# Cache config and views (but NOT routes - breaks L5-Swagger)\n\
 echo "Caching configuration..."\n\
-php artisan config:clear\n\
 php artisan config:cache\n\
-php artisan route:cache\n\
 php artisan view:cache\n\
-
+\n\
 # Fix permissions again\n\
 chown -R www-data:www-data /var/www/html/storage\n\
 chmod -R 775 /var/www/html/storage\n\
