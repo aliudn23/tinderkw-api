@@ -1,0 +1,27 @@
+# .dockerignore
+.git
+.github
+.env
+.env.example
+.env.production
+node_modules
+npm-debug.log
+vendor
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+bootstrap/cache/*
+tests
+.phpunit.result.cache
+phpunit.xml
+.editorconfig
+.gitignore
+.gitattributes
+README_LARAVEL.md
+PROJECT_SUMMARY.md
+TESTING.md
+DEPLOYMENT.md
+QUICK_REFERENCE.md
+setup.sh
+docker-compose.yml

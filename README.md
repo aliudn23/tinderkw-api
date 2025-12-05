@@ -185,6 +185,50 @@ The collection includes:
 - All API endpoints with sample requests
 - Automatic token extraction from register-device response
 
+## Docker Deployment
+
+### Local Testing with Docker
+
+```bash
+# Build image
+./docker-build.sh
+
+# Run with docker-compose (includes PostgreSQL)
+docker-compose up -d
+
+# Access API
+http://localhost:8000/api/documentation
+```
+
+### Deploy to Render.com
+
+**Render.com** is the recommended platform for deploying this Laravel API (Netlify does not support PHP).
+
+**Quick Start:**
+
+1. Push your code to GitHub
+2. Sign up at [render.com](https://render.com)
+3. Create new "Blueprint" and connect your repo
+4. Render auto-detects `render.yaml` and sets up everything
+5. Set environment variables (APP_KEY, JWT_SECRET, MAIL credentials)
+6. Deploy!
+
+**Features:**
+- ✅ Free tier with PostgreSQL included
+- ✅ Automatic deployments from Git
+- ✅ Free SSL certificates
+- ✅ Built-in monitoring and logs
+
+**Complete guide:** See [RENDER_DEPLOYMENT.md](RENDER_DEPLOYMENT.md)
+
+### Other Docker Hosting Options
+
+- **Railway.app** - Similar to Render, easy deployment
+- **DigitalOcean App Platform** - Managed container platform
+- **AWS ECS/Fargate** - Enterprise-grade container orchestration
+- **Google Cloud Run** - Serverless containers
+- **Azure Container Apps** - Microsoft's container platform
+
 ## License
 
 MIT

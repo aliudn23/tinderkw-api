@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:80"
+    environment:
+      - APP_NAME=TinderKW
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - APP_KEY=${APP_KEY}
+      - APP_URL=http://localhost:8000
+      - DB_CONNECTION=pgsql
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_DATABASE=tinderkw
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=secret
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_ALGO=HS256
+      - JWT_TTL=43200
+      - MAIL_MAILER=log
+      - ADMIN_EMAIL=admin@tinderkw.com
+    depends_on:
+      - db
+    networks:
+      - tinderkw-network
+    volumes:
+      - ./storage:/var/www/html/storage
+
+  db:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=tinderkw
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=secret
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - tinderkw-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  tinderkw-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

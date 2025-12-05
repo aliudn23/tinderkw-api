@@ -1,0 +1,75 @@
+# Render.com Deployment Configuration
+# https://render.com/docs/deploy-php
+
+services:
+  - type: web
+    name: tinderkw-api
+    env: docker
+    region: oregon # or any region you prefer
+    plan: starter # free tier, upgrade as needed
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: APP_NAME
+        value: TinderKW
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: APP_KEY
+        generateValue: true
+        # Or set manually: base64:your-generated-key
+      - key: APP_URL
+        value: https://tinderkw-api.onrender.com
+      - key: JWT_SECRET
+        generateValue: true
+        # Or generate: php -r "echo base64_encode(random_bytes(32));"
+      - key: JWT_ALGO
+        value: HS256
+      - key: JWT_TTL
+        value: 43200
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: LOG_LEVEL
+        value: info
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        fromDatabase:
+          name: tinderkw-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: tinderkw-db
+          property: port
+      - key: DB_DATABASE
+        fromDatabase:
+          name: tinderkw-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: tinderkw-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: tinderkw-db
+          property: password
+      - key: MAIL_MAILER
+        value: smtp
+      - key: MAIL_HOST
+        value: sandbox.smtp.mailtrap.io
+      - key: MAIL_PORT
+        value: 2525
+      - key: MAIL_USERNAME
+        sync: false # Set in Render dashboard
+      - key: MAIL_PASSWORD
+        sync: false # Set in Render dashboard
+      - key: MAIL_FROM_ADDRESS
+        value: noreply@tinderkw.com
+      - key: ADMIN_EMAIL
+        value: admin@tinderkw.com
+
+databases:
+  - name: tinderkw-db
+    plan: starter # free PostgreSQL
+    databaseName: tinderkw
+    user: tinderkw
