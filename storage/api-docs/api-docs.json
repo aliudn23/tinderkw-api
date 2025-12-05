@@ -2,12 +2,19 @@
     "openapi": "3.0.0",
     "info": {
         "title": "TinderKW API",
-        "description": "Tinder-like API for mobile apps",
+        "description": "Tinder-like API for mobile applications with device-based JWT authentication",
         "contact": {
-            "email": "aliudn@gmail.com"
+            "name": "TinderKW Support",
+            "email": "admin@tinderkw.com"
         },
         "version": "1.0.0"
     },
+    "servers": [
+        {
+            "url": "https://tinderkw-api.onrender.com",
+            "description": "API Server"
+        }
+    ],
     "paths": {
         "/api/register-device": {
             "post": {
@@ -15,6 +22,7 @@
                     "Authentication"
                 ],
                 "summary": "Register a new device and get JWT token",
+                "description": "Register a device to receive a JWT token for authentication. If device already exists, returns a refreshed token.",
                 "operationId": "4f0419c8ce78b350614831d64e87f449",
                 "requestBody": {
                     "required": true,
@@ -26,14 +34,17 @@
                                 ],
                                 "properties": {
                                     "device_id": {
+                                        "description": "Unique device identifier",
                                         "type": "string",
                                         "example": "unique-device-identifier-123"
                                     },
                                     "device_type": {
+                                        "description": "Type of device",
                                         "type": "string",
                                         "example": "iOS"
                                     },
                                     "device_model": {
+                                        "description": "Device model",
                                         "type": "string",
                                         "example": "iPhone 14 Pro"
                                     }
@@ -90,7 +101,27 @@
                         }
                     },
                     "422": {
-                        "description": "Validation error"
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation error"
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -101,6 +132,7 @@
                     "Interactions"
                 ],
                 "summary": "Like a person",
+                "description": "Create a like interaction with a person. Sends email notification when person reaches 50 likes.",
                 "operationId": "7219915e3e583e46d9fe6a116799b5e3",
                 "requestBody": {
                     "required": true,
@@ -112,6 +144,7 @@
                                 ],
                                 "properties": {
                                     "person_id": {
+                                        "description": "ID of the person to like",
                                         "type": "integer",
                                         "example": 1
                                     }
@@ -135,6 +168,23 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Person liked successfully"
+                                        },
+                                        "person": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "أحمد الخالد"
+                                                },
+                                                "like_count": {
+                                                    "type": "integer",
+                                                    "example": 51
+                                                }
+                                            },
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
@@ -142,11 +192,68 @@
                             }
                         }
                     },
-                    "404": {
-                        "description": "Person not found"
-                    },
                     "409": {
-                        "description": "Already interacted with this person"
+                        "description": "Already interacted with this person",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "You have already interacted with this person"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation error"
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -162,6 +269,7 @@
                     "Interactions"
                 ],
                 "summary": "Dislike a person",
+                "description": "Create a dislike interaction with a person",
                 "operationId": "0573128a0ffe94e1d9e3b14ed808b9cc",
                 "requestBody": {
                     "required": true,
@@ -173,6 +281,7 @@
                                 ],
                                 "properties": {
                                     "person_id": {
+                                        "description": "ID of the person to dislike",
                                         "type": "integer",
                                         "example": 1
                                     }
@@ -203,11 +312,68 @@
                             }
                         }
                     },
-                    "404": {
-                        "description": "Person not found"
-                    },
                     "409": {
-                        "description": "Already interacted with this person"
+                        "description": "Already interacted with this person",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "You have already interacted with this person"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation error"
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -222,100 +388,14 @@
                 "tags": [
                     "Interactions"
                 ],
-                "summary": "Get list of liked people by current device",
+                "summary": "Get list of liked people",
+                "description": "Retrieve a paginated list of people you have liked",
                 "operationId": "839be585d075bcace7e97d0f4eb6af56",
                 "parameters": [
                     {
-                        "name": "page",
-                        "in": "query",
-                        "description": "Page number",
-                        "required": false,
-                        "schema": {
-                            "type": "integer",
-                            "example": 1
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "List of liked people",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "properties": {
-                                                    "id": {
-                                                        "type": "integer",
-                                                        "example": 1
-                                                    },
-                                                    "name": {
-                                                        "type": "string",
-                                                        "example": "John Doe"
-                                                    },
-                                                    "age": {
-                                                        "type": "integer",
-                                                        "example": 25
-                                                    },
-                                                    "pictures": {
-                                                        "type": "array",
-                                                        "items": {
-                                                            "type": "string"
-                                                        }
-                                                    },
-                                                    "liked_at": {
-                                                        "type": "string",
-                                                        "example": "2025-12-05 10:30:00"
-                                                    }
-                                                },
-                                                "type": "object"
-                                            }
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
-        "/api/people": {
-            "get": {
-                "tags": [
-                    "People"
-                ],
-                "summary": "Get list of recommended people",
-                "operationId": "55f6f7c0a6d6a11cd56da8c7e7513f41",
-                "parameters": [
-                    {
-                        "name": "page",
-                        "in": "query",
-                        "description": "Page number",
-                        "required": false,
-                        "schema": {
-                            "type": "integer",
-                            "example": 1
-                        }
-                    },
-                    {
                         "name": "per_page",
                         "in": "query",
-                        "description": "Items per page",
+                        "description": "Number of people per page (default: 10)",
                         "required": false,
                         "schema": {
                             "type": "integer",
@@ -325,7 +405,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "List of recommended people",
+                        "description": "List of liked people retrieved successfully",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -344,11 +424,11 @@
                                                     },
                                                     "name": {
                                                         "type": "string",
-                                                        "example": "John Doe"
+                                                        "example": "أحمد الخالد"
                                                     },
                                                     "age": {
                                                         "type": "integer",
-                                                        "example": 25
+                                                        "example": 28
                                                     },
                                                     "pictures": {
                                                         "type": "array",
@@ -365,6 +445,146 @@
                                                             "country": {
                                                                 "type": "string",
                                                                 "example": "Kuwait"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "liked_at": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2024-01-15 10:30:00"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "pagination": {
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "example": 10
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 25
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "example": 3
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/people": {
+            "get": {
+                "tags": [
+                    "People"
+                ],
+                "summary": "List people for swiping",
+                "description": "Get a paginated list of people who haven't been interacted with yet. Excludes already liked or disliked people.",
+                "operationId": "55f6f7c0a6d6a11cd56da8c7e7513f41",
+                "parameters": [
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Number of people per page (default: 10)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of people retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "أحمد الخالد"
+                                                    },
+                                                    "age": {
+                                                        "type": "integer",
+                                                        "example": 28
+                                                    },
+                                                    "pictures": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "location": {
+                                                        "properties": {
+                                                            "city": {
+                                                                "type": "string",
+                                                                "example": "Kuwait City"
+                                                            },
+                                                            "country": {
+                                                                "type": "string",
+                                                                "example": "Kuwait"
+                                                            },
+                                                            "latitude": {
+                                                                "type": "number",
+                                                                "format": "float",
+                                                                "example": 29.3759
+                                                            },
+                                                            "longitude": {
+                                                                "type": "number",
+                                                                "format": "float",
+                                                                "example": 47.9774
                                                             }
                                                         },
                                                         "type": "object"
@@ -401,7 +621,24 @@
                         }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized - Invalid or missing JWT token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -416,7 +653,8 @@
                 "tags": [
                     "People"
                 ],
-                "summary": "Get person details by ID",
+                "summary": "Get a person's profile",
+                "description": "Retrieve detailed information about a specific person by their ID",
                 "operationId": "4106136af17939e7d3c84d573f8eea11",
                 "parameters": [
                     {
@@ -425,13 +663,14 @@
                         "description": "Person ID",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "integer",
+                            "example": 1
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Person details",
+                        "description": "Person retrieved successfully",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -448,11 +687,11 @@
                                                 },
                                                 "name": {
                                                     "type": "string",
-                                                    "example": "John Doe"
+                                                    "example": "أحمد الخالد"
                                                 },
                                                 "age": {
                                                     "type": "integer",
-                                                    "example": 25
+                                                    "example": 28
                                                 },
                                                 "pictures": {
                                                     "type": "array",
@@ -461,6 +700,26 @@
                                                     }
                                                 },
                                                 "location": {
+                                                    "properties": {
+                                                        "city": {
+                                                            "type": "string",
+                                                            "example": "Kuwait City"
+                                                        },
+                                                        "country": {
+                                                            "type": "string",
+                                                            "example": "Kuwait"
+                                                        },
+                                                        "latitude": {
+                                                            "type": "number",
+                                                            "format": "float",
+                                                            "example": 29.3759
+                                                        },
+                                                        "longitude": {
+                                                            "type": "number",
+                                                            "format": "float",
+                                                            "example": 47.9774
+                                                        }
+                                                    },
                                                     "type": "object"
                                                 }
                                             },
@@ -473,7 +732,44 @@
                         }
                     },
                     "404": {
-                        "description": "Person not found"
+                        "description": "Person not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Person not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - Invalid or missing JWT token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -488,6 +784,7 @@
         "securitySchemes": {
             "bearerAuth": {
                 "type": "http",
+                "description": "Enter JWT token obtained from /api/register-device endpoint",
                 "bearerFormat": "JWT",
                 "scheme": "bearer"
             }
@@ -496,15 +793,15 @@
     "tags": [
         {
             "name": "Authentication",
-            "description": "Authentication"
-        },
-        {
-            "name": "Interactions",
-            "description": "Interactions"
+            "description": "Device registration and authentication endpoints"
         },
         {
             "name": "People",
-            "description": "People"
+            "description": "Browse and view people profiles"
+        },
+        {
+            "name": "Interactions",
+            "description": "Like, dislike, and view liked people"
         }
     ]
 }

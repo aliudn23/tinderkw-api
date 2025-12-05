@@ -13,6 +13,62 @@ use Illuminate\Support\Facades\DB;
 
 class InteractionController extends Controller
 {
+    /**
+     * @OA\Post(
+     *     path="/api/interactions/like",
+     *     summary="Like a person",
+     *     description="Create a like interaction with a person. Sends email notification when person reaches 50 likes.",
+     *     tags={"Interactions"},
+     *     security={{"bearerAuth": {}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"person_id"},
+     *             @OA\Property(property="person_id", type="integer", example=1, description="ID of the person to like")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Person liked successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Person liked successfully"),
+     *             @OA\Property(
+     *                 property="person",
+     *                 type="object",
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="name", type="string", example="أحمد الخالد"),
+     *                 @OA\Property(property="like_count", type="integer", example=51)
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=409,
+     *         description="Already interacted with this person",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="You have already interacted with this person")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Validation error"),
+     *             @OA\Property(property="errors", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Unauthorized")
+     *         )
+     *     )
+     * )
+     */
     public function like(Request $request)
     {
         $device = $request->input('authenticated_device');
@@ -82,6 +138,55 @@ class InteractionController extends Controller
         }
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/interactions/dislike",
+     *     summary="Dislike a person",
+     *     description="Create a dislike interaction with a person",
+     *     tags={"Interactions"},
+     *     security={{"bearerAuth": {}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"person_id"},
+     *             @OA\Property(property="person_id", type="integer", example=1, description="ID of the person to dislike")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Person disliked successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Person disliked successfully")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=409,
+     *         description="Already interacted with this person",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="You have already interacted with this person")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Validation error"),
+     *             @OA\Property(property="errors", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Unauthorized")
+     *         )
+     *     )
+     * )
+     */
     public function dislike(Request $request)
     {
         $device = $request->input('authenticated_device');
@@ -123,6 +228,62 @@ class InteractionController extends Controller
         ], 200);
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/interactions/liked",
+     *     summary="Get list of liked people",
+     *     description="Retrieve a paginated list of people you have liked",
+     *     tags={"Interactions"},
+     *     security={{"bearerAuth": {}}},
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         description="Number of people per page (default: 10)",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=10)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of liked people retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(
+     *                     @OA\Property(property="id", type="integer", example=1),
+     *                     @OA\Property(property="name", type="string", example="أحمد الخالد"),
+     *                     @OA\Property(property="age", type="integer", example=28),
+     *                     @OA\Property(property="pictures", type="array", @OA\Items(type="string")),
+     *                     @OA\Property(
+     *                         property="location",
+     *                         type="object",
+     *                         @OA\Property(property="city", type="string", example="Kuwait City"),
+     *                         @OA\Property(property="country", type="string", example="Kuwait")
+     *                     ),
+     *                     @OA\Property(property="liked_at", type="string", format="date-time", example="2024-01-15 10:30:00")
+     *                 )
+     *             ),
+     *             @OA\Property(
+     *                 property="pagination",
+     *                 type="object",
+     *                 @OA\Property(property="current_page", type="integer", example=1),
+     *                 @OA\Property(property="per_page", type="integer", example=10),
+     *                 @OA\Property(property="total", type="integer", example=25),
+     *                 @OA\Property(property="last_page", type="integer", example=3)
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Unauthorized")
+     *         )
+     *     )
+     * )
+     */
     public function likedPeople(Request $request)
     {
         $device = $request->input('authenticated_device');

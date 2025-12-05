@@ -17,6 +17,49 @@ class AuthController extends Controller
         $this->jwtService = $jwtService;
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/register-device",
+     *     summary="Register a new device and get JWT token",
+     *     description="Register a device to receive a JWT token for authentication. If device already exists, returns a refreshed token.",
+     *     tags={"Authentication"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"device_id"},
+     *             @OA\Property(property="device_id", type="string", example="unique-device-identifier-123", description="Unique device identifier"),
+     *             @OA\Property(property="device_type", type="string", example="iOS", description="Type of device"),
+     *             @OA\Property(property="device_model", type="string", example="iPhone 14 Pro", description="Device model")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Device registered successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Device registered successfully"),
+     *             @OA\Property(property="token", type="string", example="eyJ0eXAiOiJKV1QiLCJhbGc..."),
+     *             @OA\Property(
+     *                 property="device",
+     *                 type="object",
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="device_id", type="string", example="unique-device-identifier-123"),
+     *                 @OA\Property(property="device_type", type="string", example="iOS"),
+     *                 @OA\Property(property="device_model", type="string", example="iPhone 14 Pro")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Validation error"),
+     *             @OA\Property(property="errors", type="object")
+     *         )
+     *     )
+     * )
+     */
     public function registerDevice(Request $request)
     {
         $validator = Validator::make($request->all(), [
