@@ -73,17 +73,20 @@ php artisan migrate --force\n\
 echo "Seeding database..."\n\
 php artisan db:seed --force || echo "Seeding skipped (may already be seeded)"\n\
 \n\
+
+\n\
+# Generate Swagger documentation\n\
+echo "Generating Swagger documentation..."\n\
+php artisan l5-swagger:generate\n\
+\n\
+
 # Clear and cache config\n\
 echo "Caching configuration..."\n\
 php artisan config:clear\n\
 php artisan config:cache\n\
 php artisan route:cache\n\
 php artisan view:cache\n\
-\n\
-# Generate Swagger documentation\n\
-echo "Generating Swagger documentation..."\n\
-php artisan l5-swagger:generate\n\
-\n\
+
 # Fix permissions again\n\
 chown -R www-data:www-data /var/www/html/storage\n\
 chmod -R 775 /var/www/html/storage\n\
