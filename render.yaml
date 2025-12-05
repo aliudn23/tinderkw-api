@@ -34,9 +34,7 @@ services:
       - key: L5_SWAGGER_USE_ABSOLUTE_PATH
         value: true
       - key: L5_SWAGGER_GENERATE_ALWAYS
-        value: false
-      - key: L5_SWAGGER_CONST_HOST
-        value: https://tinderkw-api.onrender.com
+        value: true
       - key: ASSET_URL
         value: https://tinderkw-api.onrender.com
       - key: DB_CONNECTION
