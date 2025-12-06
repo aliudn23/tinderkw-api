@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Person;
 use App\Models\Interaction;
+use App\Models\Admin;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\PersonPopularNotification;
@@ -114,8 +115,10 @@ class InteractionController extends Controller
 
             // Check if person reached 50 likes milestone
             if ($person->like_count == 50) {
-                $adminEmail = config('app.admin_email');
-                Mail::to($adminEmail)->send(new PersonPopularNotification($person));
+                $admin = Admin::first();
+                if ($admin && $admin->email) {
+                    Mail::to($admin->email)->send(new PersonPopularNotification($person));
+                }
             }
 
             DB::commit();

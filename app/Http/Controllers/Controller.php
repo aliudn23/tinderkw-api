@@ -40,6 +40,11 @@ namespace App\Http\Controllers;
  *     name="Interactions",
  *     description="Like, dislike, and view liked people"
  * )
+ * 
+ * @OA\Tag(
+ *     name="Admin",
+ *     description="Manage admin information and notification email"
+ * )
  */
 abstract class Controller
 {
